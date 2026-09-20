@@ -1,0 +1,244 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Exact IBVAP-SIM Tactical HUD Design Tokens */
+    --bg-main: #071014;
+    --panel-base: #0D171C;
+    --panel-card: #101E24;
+    --panel-hover: #132128;
+    --text-pri: #E8F1F4;
+    --text-mut: #758890;
+    --text-dim: #52676F;
+    --c-cyan: #48D3D2;
+    --c-amber: #F4B65A;
+    --c-violet: #AD91FF;
+    --c-green: #6ED694;
+    --c-red: #F07576;
+    --border-subtle: #192830;
+    --border-panel: #192830;
+
+    /* Theme Bridge for HSL utility compatibility */
+    --background: 200 47% 5%; /* #071014 */
+    --foreground: 194 36% 93%; /* #E8F1F4 */
+
+    --card: 202 36% 8%; /* #0D171C */
+    --card-foreground: 194 36% 93%;
+
+    --popover: 202 36% 8%;
+    --popover-foreground: 194 36% 93%;
+
+    --primary: 179 61% 56%; /* #48D3D2 */
+    --primary-foreground: 200 47% 5%;
+
+    --secondary: 200 38% 10%; /* #101E24 */
+    --secondary-foreground: 194 36% 93%;
+
+    --muted: 198 22% 14%; /* #132128 */
+    --muted-foreground: 198 11% 51%; /* #758890 */
+
+    --accent: 179 61% 56%; /* #48D3D2 */
+    --accent-foreground: 200 47% 5%;
+
+    --destructive: 359 80% 70%; /* #F07576 */
+    --destructive-foreground: 200 47% 5%;
+
+    --warning: 36 88% 65%; /* #F4B65A */
+    --warning-foreground: 200 47% 5%;
+
+    --border: 200 32% 14%; /* #192830 */
+    --input: 200 32% 14%;
+    --ring: 179 61% 56%;
+
+    --radius: 0.75rem; /* rounded-xl */
+  }
+
+  body {
+    background-color: #071014;
+    color: #E8F1F4;
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Mono font utility for telemetry and timestamps */
+  .font-mono-code {
+    font-family: 'DM Mono', monospace, ui-monospace;
+  }
+}
+
+/* Custom scrollbar for dense tactical panels */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #071014;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a2931;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #283e4a;
+}
+
+@layer utilities {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #283e4a #091317;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #091317;
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #233946;
+    border-radius: 4px;
+    border: 1px solid #101E24;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #48D3D2;
+  }
+}
+
+/* Radar Sweep Keyframes */
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar-sweep {
+  animation: radar-sweep 10s linear infinite;
+  transform-origin: center center;
+}
+
+/* Radar Sweep Conic Gradient Beam with Phosphor Trail */
+.radar-sweep-beam-cyan {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(72, 211, 210, 0.42) 0deg,
+    rgba(72, 211, 210, 0.18) 25deg,
+    rgba(72, 211, 210, 0.04) 55deg,
+    transparent 80deg,
+    transparent 360deg
+  );
+}
+
+.radar-sweep-beam-emergency {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(240, 117, 118, 0.55) 0deg,
+    rgba(244, 182, 90, 0.25) 30deg,
+    rgba(240, 117, 118, 0.06) 65deg,
+    transparent 90deg,
+    transparent 360deg
+  );
+}
+
+.radar-sweep-beam-drone {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(72, 211, 210, 0.5) 0deg,
+    rgba(110, 214, 148, 0.22) 28deg,
+    rgba(72, 211, 210, 0.04) 60deg,
+    transparent 85deg,
+    transparent 360deg
+  );
+}
+
+.radar-sweep-beam-vehicle {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(244, 182, 90, 0.5) 0deg,
+    rgba(244, 182, 90, 0.2) 28deg,
+    rgba(244, 182, 90, 0.04) 55deg,
+    transparent 80deg,
+    transparent 360deg
+  );
+}
+
+.radar-sweep-beam-stealth {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(244, 182, 90, 0.6) 0deg,
+    rgba(173, 145, 255, 0.3) 30deg,
+    rgba(244, 182, 90, 0.05) 70deg,
+    transparent 90deg,
+    transparent 360deg
+  );
+}
+
+@keyframes radar-blip-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  100% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+}
+
+.animate-radar-blip {
+  animation: radar-blip-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes emergency-beacon {
+  0%, 100% {
+    border-color: rgba(240, 117, 118, 0.35);
+    box-shadow: 0 0 12px rgba(240, 117, 118, 0.15);
+  }
+  50% {
+    border-color: rgba(240, 117, 118, 0.95);
+    box-shadow: 0 0 28px rgba(240, 117, 118, 0.45), inset 0 0 16px rgba(240, 117, 118, 0.2);
+  }
+}
+
+.animate-emergency-beacon {
+  animation: emergency-beacon 1.2s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.18);
+  }
+}
+
+.animate-halo-pulse {
+  animation: subtle-pulse 2.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes scan-oscillation {
+  from { transform: rotate(-30deg); }
+  to { transform: rotate(30deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-radar-sweep,
+  .animate-halo-pulse,
+  .animate-radar-blip,
+  .animate-emergency-beacon {
+    animation: none !important;
+  }
+}
+
