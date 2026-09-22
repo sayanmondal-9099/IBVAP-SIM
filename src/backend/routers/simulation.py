@@ -312,5 +312,8 @@ async def websocket_telemetry(websocket: WebSocket):
         while True:
             # Keep connection alive
             await websocket.receive_text()
-    except WebSocketDisconnect:
-        connected_websockets.remove(websocket)
+    except (WebSocketDisconnect, Exception):
+        pass
+    finally:
+        if websocket in connected_websockets:
+            connected_websockets.remove(websocket)
