@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { api } from "@/lib/api";
 import {
   Table,
   TableBody,
@@ -49,7 +49,7 @@ export default function Incidents() {
   const fetchIncidents = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/incidents");
+      const res = await api.get("/api/incidents");
       if (Array.isArray(res.data)) {
         setIncidents(res.data);
         if (incidentId) {
@@ -68,7 +68,7 @@ export default function Incidents() {
     let isMounted = true;
     const load = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/incidents");
+        const res = await api.get("/api/incidents");
         if (isMounted && Array.isArray(res.data)) {
           setIncidents(res.data);
           if (incidentId) {
@@ -90,7 +90,7 @@ export default function Incidents() {
     if (!selectedIncident) return;
     setIsSubmitting(true);
     try {
-      await axios.post(`http://127.0.0.1:8000/api/incidents/${selectedIncident.id}/resolve`, {
+      await api.post(`/api/incidents/${selectedIncident.id}/resolve`, {
         resolution,
         notes,
       });
@@ -109,8 +109,8 @@ export default function Incidents() {
     setIsSubmitting(true);
     setTransferSuccess(null);
     try {
-      await axios.post(
-        "http://127.0.0.1:8000/api/mock-receiver", 
+      await api.post(
+        "/api/mock-receiver", 
         {
           incident_id: selectedIncident.id,
           alert_data: { context: "Mock operator transfer request" },

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
-import axios from "axios";
+import { api } from "@/lib/api";
 import { useSimulationSocket } from "../hooks/useSimulationSocket";
 import type { Observation } from "../hooks/useSimulationSocket";
 import type { Sensor, Zone, SimulationEvent } from "../hooks/useEnvironmentPoll";
@@ -80,14 +80,14 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const acknowledgeThreat = (objectId: string) => {
     setAcknowledgedThreatIds((prev) => (prev.includes(objectId) ? prev : [...prev, objectId]));
     // Asynchronously persist to backend alerts so route switches to /alerts or DB queries reflect the acknowledgment
-    axios.get("http://127.0.0.1:8000/api/alerts")
+    api.get("/api/alerts")
       .then((res) => {
         if (Array.isArray(res.data)) {
           const matching = res.data.filter(
             (a: any) => a.object_id === objectId && (a.status === "new" || a.status === "unacknowledged")
           );
           return Promise.allSettled(
-            matching.map((a: any) => axios.patch(`http://127.0.0.1:8000/api/alerts/${a.id}/acknowledge`))
+            matching.map((a: any) => api.patch(`/api/alerts/${a.id}/acknowledge`))
           );
         }
       })
@@ -100,13 +100,13 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
     const currentFused = observations.filter((o) => o.sensor_type === "fused").map((o) => o.object_id);
     setAcknowledgedThreatIds((prev) => Array.from(new Set([...prev, ...currentFused, ...newAlerts])));
     // Asynchronously persist bulk acknowledge to backend
-    axios.post("http://127.0.0.1:8000/api/alerts/acknowledge-all")
+    api.post("/api/alerts/acknowledge-all")
       .catch(() => {
         // Fallback to fetch and patch
-        axios.get("http://127.0.0.1:8000/api/alerts").then((res) => {
+        api.get("/api/alerts").then((res) => {
           if (Array.isArray(res.data)) {
             const active = res.data.filter((a: any) => a.status === "new" || a.status === "unacknowledged");
-            Promise.allSettled(active.map((a: any) => axios.patch(`http://127.0.0.1:8000/api/alerts/${a.id}/acknowledge`)));
+            Promise.allSettled(active.map((a: any) => api.patch(`/api/alerts/${a.id}/acknowledge`)));
           }
         }).catch(() => {});
       });
@@ -251,7 +251,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
 
   const fetchState = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/simulation/state");
+      const res = await api.get("/api/simulation/state");
       setSimulationState(prev => {
         if (prev && JSON.stringify(prev) === JSON.stringify(res.data)) return prev;
         return res.data;
@@ -270,7 +270,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
 
   const fetchEnvironment = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/simulation/environment");
+      const res = await api.get("/api/simulation/environment");
       setEnvironment(prev => {
         if (prev && JSON.stringify(prev) === JSON.stringify(res.data)) return prev;
         return res.data;
@@ -282,7 +282,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
 
   const fetchTracks = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/simulation/tracks");
+      const res = await api.get("/api/simulation/tracks");
       setTracks(prev => {
         if (prev && JSON.stringify(prev) === JSON.stringify(res.data)) return prev;
         return res.data;
@@ -326,7 +326,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
       setIsTransitioning(true);
       clearState();
       const anomalyFlag = enableAnomaly !== undefined ? enableAnomaly : anomalyEnabled;
-      await axios.post("http://127.0.0.1:8000/api/simulation/start", { 
+      await api.post("/api/simulation/start", { 
         scenario, 
         speed_multiplier: speedMultiplier,
         anomaly_detection_enabled: anomalyFlag
@@ -343,7 +343,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
 
   const pauseSimulation = async () => {
     try {
-      await axios.post("http://127.0.0.1:8000/api/simulation/pause");
+      await api.post("/api/simulation/pause");
       await fetchState();
     } catch (err) {
       console.error("Failed to pause simulation", err);
@@ -352,7 +352,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
 
   const resumeSimulation = async () => {
     try {
-      await axios.post("http://127.0.0.1:8000/api/simulation/resume");
+      await api.post("/api/simulation/resume");
       await fetchState();
     } catch (err) {
       console.error("Failed to resume simulation", err);
@@ -361,7 +361,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
 
   const resetSimulation = async () => {
     try {
-      await axios.post("http://127.0.0.1:8000/api/simulation/stop");
+      await api.post("/api/simulation/stop");
       clearState();
       soundManager.stopEmergencySiren();
       soundManager.stopAlertLoop();
@@ -376,7 +376,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const handleSetSpeedMultiplier = async (speed: number) => {
     setSpeedMultiplier(speed);
     try {
-      await axios.post("http://127.0.0.1:8000/api/simulation/speed", { speed_multiplier: speed });
+      await api.post("/api/simulation/speed", { speed_multiplier: speed });
       await fetchState();
     } catch (err) {
       console.error("Failed to set speed", err);

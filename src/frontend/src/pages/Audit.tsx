@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import { api } from "@/lib/api";
 import {
   Table,
   TableBody,
@@ -44,7 +44,7 @@ export default function Audit() {
   const fetchLogs = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/audit");
+      const res = await api.get("/api/audit");
       if (Array.isArray(res.data)) {
         setLogs(res.data);
       }
@@ -59,7 +59,7 @@ export default function Audit() {
     let isMounted = true;
     const load = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/audit");
+        const res = await api.get("/api/audit");
         if (isMounted && Array.isArray(res.data)) {
           setLogs(res.data);
         }
@@ -76,7 +76,7 @@ export default function Audit() {
   const handleVerify = async () => {
     setIsVerifying(true);
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/audit/verify");
+      const res = await api.get("/api/audit/verify");
       setVerifyStatus(res.data.status === "VERIFIED" || res.data.verified ? "VERIFIED" : "INVALID");
     } catch (err) {
       console.error("Verification failed", err);

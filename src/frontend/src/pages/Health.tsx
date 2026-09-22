@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import { api } from "@/lib/api";
+import { API_BASE_URL } from "@/lib/config";
 import { useSimulationContext } from "../contexts/SimulationContext";
 import { 
   Activity, 
@@ -32,7 +33,7 @@ export default function Health() {
     setIsPinging(true);
     const start = performance.now();
     try {
-      const res = await axios.get("http://127.0.0.1:8000/health");
+      const res = await api.get("/health");
       const latency = Math.round(performance.now() - start);
       setApiHealth({ status: res.data.status || "healthy", latency });
     } catch {
@@ -47,7 +48,7 @@ export default function Health() {
     const ping = async () => {
       const start = performance.now();
       try {
-        const res = await axios.get("http://127.0.0.1:8000/health");
+        const res = await api.get("/health");
         if (isMounted) {
           const latency = Math.round(performance.now() - start);
           setApiHealth({ status: res.data.status || "healthy", latency });
@@ -150,7 +151,7 @@ export default function Health() {
                 <Server className="w-4 h-4 text-[#48D3D2]" />
                 <div>
                   <div className="font-bold text-[#E8F1F4]">BACKEND REST API (FASTAPI)</div>
-                  <div className="text-[10px] text-[#758890]">http://127.0.0.1:8000 · Uvicorn ASGI Engine</div>
+                  <div className="text-[10px] text-[#758890]">{API_BASE_URL} · Uvicorn ASGI Engine</div>
                 </div>
               </div>
               <StatusPill

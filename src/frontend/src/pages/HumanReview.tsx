@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { api } from "@/lib/api";
 import { 
   UserCheck, 
   Target, 
@@ -47,8 +47,8 @@ export default function HumanReview() {
     let isMounted = true;
     if (!alertId) return;
 
-    axios
-      .get("http://127.0.0.1:8000/api/alerts")
+    api
+      .get("/api/alerts")
       .then((res) => {
         if (isMounted && Array.isArray(res.data)) {
           const found = res.data.find((a: AlertDetail) => a.id === alertId);
@@ -72,7 +72,7 @@ export default function HumanReview() {
     setIsSubmitting(true);
     setActiveDecision(decision);
     try {
-      await axios.post(`http://127.0.0.1:8000/api/alerts/${alertId}/review`, {
+      await api.post(`/api/alerts/${alertId}/review`, {
         decision,
         notes,
         reviewer_id: "operator_01",
@@ -80,7 +80,7 @@ export default function HumanReview() {
 
       // If confirmed, escalate to incident automatically based on workflow requirements
       if (decision === "CONFIRMED SIMULATION CLASS") {
-        await axios.post(`http://127.0.0.1:8000/api/alerts/${alertId}/escalate`);
+        await api.post(`/api/alerts/${alertId}/escalate`);
       }
 
       navigate("/alerts");

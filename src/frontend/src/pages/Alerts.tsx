@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import axios from "axios";
+import { api } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import { useSimulationContext } from "../contexts/SimulationContext";
 import { 
@@ -139,7 +139,7 @@ export default function Alerts() {
   const fetchAlerts = useCallback(async () => {
     setIsRefreshing(true);
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/alerts");
+      const res = await api.get("/api/alerts");
       if (Array.isArray(res.data)) {
         setAlerts(res.data);
       }
@@ -154,7 +154,7 @@ export default function Alerts() {
     let isMounted = true;
     const load = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/alerts");
+        const res = await api.get("/api/alerts");
         if (isMounted && Array.isArray(res.data)) {
           setAlerts(res.data);
         }
@@ -175,7 +175,7 @@ export default function Alerts() {
       acknowledgeThreat(objectId);
     }
     try {
-      await Promise.allSettled(ids.map(id => axios.patch(`http://127.0.0.1:8000/api/alerts/${id}/acknowledge`)));
+      await Promise.allSettled(ids.map(id => api.patch(`/api/alerts/${id}/acknowledge`)));
       fetchAlerts();
     } catch (err) {
       console.error("Failed to acknowledge", err);
@@ -187,12 +187,12 @@ export default function Alerts() {
     setAlerts(prev => prev.map(a => (a.status === "new" || a.status === "unacknowledged") ? { ...a, status: "acknowledged" } : a));
     acknowledgeAllThreats();
     try {
-      await axios.post("http://127.0.0.1:8000/api/alerts/acknowledge-all");
+      await api.post("/api/alerts/acknowledge-all");
       fetchAlerts();
     } catch {
       try {
         const activeAlerts = alerts.filter(a => a.status === "new" || a.status === "unacknowledged");
-        await Promise.allSettled(activeAlerts.map(a => axios.patch(`http://127.0.0.1:8000/api/alerts/${a.id}/acknowledge`)));
+        await Promise.allSettled(activeAlerts.map(a => api.patch(`/api/alerts/${a.id}/acknowledge`)));
         fetchAlerts();
       } catch (err) {
         console.error("Failed to acknowledge all", err);

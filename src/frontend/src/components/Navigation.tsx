@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import axios from "axios";
+import { api } from "@/lib/api";
 import { 
   Map, 
   Camera, 
@@ -64,7 +64,7 @@ export default function Navigation({
     let isMounted = true;
     const fetchCount = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/alerts");
+        const res = await api.get("/api/alerts");
         if (isMounted && Array.isArray(res.data)) {
           const active = res.data.filter((a: any) => a.status === "NEW" || a.status === "unacknowledged").length;
           setInternalAlertCount(active);

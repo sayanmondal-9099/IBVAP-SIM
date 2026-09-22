@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { api } from "@/lib/api";
 
 export type Sensor = {
   id: string;
@@ -43,7 +43,7 @@ export function useEnvironmentPoll(intervalMs = 1000) {
     
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/simulation/environment");
+        const res = await api.get("/api/simulation/environment");
         if (active) {
           setSensors(res.data.sensors || []);
           setZones(res.data.zones || []);

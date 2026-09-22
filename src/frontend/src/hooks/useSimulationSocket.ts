@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { WS_BASE_URL } from "@/lib/config";
 
 export type Observation = {
   simulation_id?: string;
@@ -38,7 +39,7 @@ export function useSimulationSocket() {
   useEffect(() => {
     let isMounted = true;
     // Connect to backend WebSocket
-    const socket = new WebSocket("ws://127.0.0.1:8000/api/simulation/telemetry");
+    const socket = new WebSocket(`${WS_BASE_URL}/api/simulation/telemetry`);
     ws.current = socket;
 
     socket.onopen = () => {
