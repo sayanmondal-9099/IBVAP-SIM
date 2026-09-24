@@ -22,7 +22,10 @@ export function SimulationControlBar() {
     resumeSimulation,
     resetSimulation,
     anomalyEnabled,
-    toggleAnomaly
+    toggleAnomaly,
+    simulationMode,
+    setSimulationMode,
+    cloudTransportState,
   } = useSimulationContext();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -81,6 +84,42 @@ export function SimulationControlBar() {
             <span className="text-[9px] text-[#48D3D2] font-bold">
               {scenario.replace('PROTOCOL-', '')}
             </span>
+          </div>
+
+          {/* Runtime Mode Selector (Dual Runtime Architecture) */}
+          <div className="flex items-center justify-between bg-[#071014] p-1.5 rounded-lg border border-[#192830]">
+            <div className="flex flex-col">
+              <span className="text-[8.5px] font-bold text-[#758890] uppercase tracking-wider">
+                RUNTIME ENGINE
+              </span>
+              <span className="text-[8px] text-[#48D3D2]">
+                {simulationMode === "cloud"
+                  ? `CLOUD (${cloudTransportState.toUpperCase()})`
+                  : "LOCAL (FASTAPI + SQLITE)"}
+              </span>
+            </div>
+            <div className="flex bg-[#0D171C] rounded border border-[#192830] p-0.5">
+              <button
+                onClick={() => setSimulationMode("local")}
+                className={`px-2 py-0.5 text-[8.5px] font-bold rounded transition-all cursor-pointer ${
+                  simulationMode === "local"
+                    ? "bg-[#48D3D2] text-[#071014] shadow-sm"
+                    : "text-[#758890] hover:text-[#E8F1F4]"
+                }`}
+              >
+                LOCAL
+              </button>
+              <button
+                onClick={() => setSimulationMode("cloud")}
+                className={`px-2 py-0.5 text-[8.5px] font-bold rounded transition-all cursor-pointer ${
+                  simulationMode === "cloud"
+                    ? "bg-[#48D3D2] text-[#071014] shadow-sm"
+                    : "text-[#758890] hover:text-[#E8F1F4]"
+                }`}
+              >
+                CLOUD
+              </button>
+            </div>
           </div>
 
           {/* Top Row: Protocols Grid */}

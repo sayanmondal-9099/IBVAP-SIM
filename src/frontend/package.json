@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "test:simulation": "vite build --ssr tests/v6d-simulation.test.ts --outDir dist-test && node dist-test/v6d-simulation.test.js",
+    "test:supabase": "vite build --ssr tests/v6d-supabase-live.test.ts --outDir dist-live && node dist-live/v6d-supabase-live.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,6 +16,7 @@
     "@radix-ui/react-slot": "^1.3.3",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
+    "@supabase/supabase-js": "^2.117.1",
     "axios": "^1.20.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
